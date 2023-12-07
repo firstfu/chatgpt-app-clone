@@ -1,9 +1,14 @@
-import React from "react";
+"use client";
+
+import Main from "@/components/home/Main";
+import Navigation from "@/components/home/Navigation";
+import React, { useState } from "react";
 
 export default function Home() {
   return (
-    <main className="bg-yellow-500 p-10">
-      <h1>Hello React</h1>
-    </main>
+    <div className="bg-yellow-500 p-10">
+      <Navigation />
+      <Main />
+    </div>
   );
 }
