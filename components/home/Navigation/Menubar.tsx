@@ -9,9 +9,10 @@ import Button from "../../common/Button";
 import { HiPlus } from "react-icons/hi";
 import { LuPanelLeft } from "react-icons/lu";
 import { useAppContext } from "@/components/AppContext";
+import { ActionType } from "@/reducers/AppReducer";
 
 export default function Menubar() {
-  const { setState } = useAppContext();
+  const { dispatch } = useAppContext();
 
   return (
     <div className="flex space-x-3">
@@ -22,12 +23,18 @@ export default function Menubar() {
         icon={LuPanelLeft}
         variant="outline"
         onClick={() => {
-          setState(v => {
-            console.log("v:", v);
-            return {
-              ...v,
-              displayNavigation: false,
-            };
+          //   setState(v => {
+          //     console.log("v:", v);
+          //     return {
+          //       ...v,
+          //       displayNavigation: false,
+          //     };
+          //   });
+
+          dispatch({
+            type: ActionType.UPDATE,
+            field: "displayNavigation",
+            value: false,
           });
         }}
       />

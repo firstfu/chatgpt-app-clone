@@ -15,11 +15,13 @@ type Props = {
 export default function Main() {
   const { state } = useAppContext();
 
+  console.log("state:", state);
+
   return (
     <main
-      className={`flex-1  relative bg-white ${state.themeMode === "dark" ? "dark:" : ""}bg-gray-800 text-gray-900 ${
+      className={`flex-1  relative bg-white  ${state.themeMode === "dark" ? "dark:" : ""}bg-gray-800 text-gray-900 ${
         state.themeMode === "dark" ? "dark:" : ""
-      }text-gray-100`}
+      }text-gray-100   bg-gray-800`}
     >
       <MenuButton />
     </main>

@@ -9,7 +9,7 @@ export default function Home() {
   const { state } = useAppContext();
 
   return (
-    <div className={`h-full flex ${state.themeMode}}`}>
+    <div className={`h-full flex dark`}>
       <Navigation />
       <Main />
     </div>
