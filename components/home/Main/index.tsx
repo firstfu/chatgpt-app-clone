@@ -19,11 +19,7 @@ export default function Main() {
   console.log("state:", state);
 
   return (
-    <main
-      className={`flex-1  relative bg-white  ${state.themeMode === "dark" ? "dark:" : ""}bg-gray-800 text-gray-900 ${
-        state.themeMode === "dark" ? "dark:" : ""
-      }text-gray-100   bg-gray-800`}
-    >
+    <main className="overflow-y-auto relative flex-1 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
       <MenuButton />
       <Welcome />
     </main>

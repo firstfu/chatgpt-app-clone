@@ -2,6 +2,7 @@ export type State = {
   // 是否顯示導航欄
   displayNavigation: boolean;
   themeMode: "dark" | "light";
+  currentModel: string;
 };
 
 // 更新屬性的操作類型
@@ -25,6 +26,7 @@ export type Action = UpdateAction;
 export const initState: State = {
   displayNavigation: true,
   themeMode: "light",
+  currentModel: "gpt-3.5-turbo",
 };
 
 export function reducer(state: State, action: Action) {
