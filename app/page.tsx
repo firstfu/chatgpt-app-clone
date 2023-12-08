@@ -6,7 +6,7 @@ import React, { useState } from "react";
 
 export default function Home() {
   return (
-    <div className="bg-yellow-500 p-10">
+    <div className="h-full flex">
       <Navigation />
       <Main />
     </div>
