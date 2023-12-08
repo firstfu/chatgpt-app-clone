@@ -8,6 +8,7 @@ import React from "react";
 import MenuButton from "./MenuButton";
 import { useAppContext } from "@/components/AppContext";
 import Welcome from "./Welcome";
+import ChatInput from "./ChatInput";
 
 type Props = {
   counter: number;
@@ -19,9 +20,12 @@ export default function Main() {
   console.log("state:", state);
 
   return (
-    <main className="overflow-y-auto relative flex-1 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
-      <MenuButton />
-      <Welcome />
-    </main>
+    <div className="flex-1 relative">
+      <main className="overflow-y-auto  w-full h-full   text-gray-900 dark:bg-gray-800 dark:text-gray-100">
+        <MenuButton />
+        <Welcome />
+        <ChatInput />
+      </main>
+    </div>
   );
 }

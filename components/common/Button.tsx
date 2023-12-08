@@ -10,7 +10,7 @@ import { IconType } from "react-icons";
 // &是組合類型
 type ButtonProps = {
   icon?: IconType;
-  variant?: "default" | "outline" | "text";
+  variant?: "default" | "outline" | "text" | "primary";
 } & ComponentPropsWithRef<"button">;
 
 export default function Button({ children, className = "", icon: Icon, variant = "default", ...props }: ButtonProps) {
@@ -21,7 +21,9 @@ export default function Button({ children, className = "", icon: Icon, variant =
        variant === "default"
          ? "text-black dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-900"
          : variant === "outline"
-         ? "border border-r-gray-300 dark:border-gray-600 text-black dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+         ? "border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+         : variant === "primary"
+         ? "bg-primary-500 text-white hover:bg-primary-600 hover:text-white shadow-sm"
          : "text-black dark:text-gray-300 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700"
      }
      ${className}`}
