@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AppContextProvider from "@/components/AppContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -9,8 +10,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      {/* <body className="dark">{children}</body> */}
-      <body className=""> {children}</body>
+      <body>
+        <AppContextProvider>{children}</AppContextProvider>
+      </body>
     </html>
   );
 }
