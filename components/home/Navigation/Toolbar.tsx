@@ -1,8 +1,4 @@
-/**
- * @ Author: firstfu
- * @ Create Time: 2023-12-08 02:13:03
- * @ Description: 工具欄
- */
+"use client";
 
 import React from "react";
 import Button from "../../common/Button";

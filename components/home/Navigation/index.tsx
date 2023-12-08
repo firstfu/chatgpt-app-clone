@@ -20,7 +20,7 @@ export default function Navigation() {
   console.log("Navigation rendered");
 
   return (
-    <nav className={`${displayNavigation ? "" : "hidden"}  flex flex-col dark relative  h-full w-[260px] bg-gray-900 text-green-300 p-2`}>
+    <nav className={`${displayNavigation ? "" : "hidden"}  flex flex-col dark relative  h-full w-[320px] bg-gray-900 text-green-300 p-2`}>
       <Menubar />
       <ChatList />
       <Toolbar />

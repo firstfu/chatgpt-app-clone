@@ -7,6 +7,7 @@
 import React from "react";
 import MenuButton from "./MenuButton";
 import { useAppContext } from "@/components/AppContext";
+import Welcome from "./Welcome";
 
 type Props = {
   counter: number;
@@ -24,6 +25,7 @@ export default function Main() {
       }text-gray-100   bg-gray-800`}
     >
       <MenuButton />
+      <Welcome />
     </main>
   );
 }

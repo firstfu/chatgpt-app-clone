@@ -10,121 +10,81 @@ import { PiChatBold, PiTrashBold } from "react-icons/pi";
 import ChatItem from "./ChatItem";
 
 export default function ChatList() {
-  let [chatList, setChatList] = useState<Chat[]>([
+  const [chatList, setChatList] = useState<Chat[]>([
     {
       id: "1",
-      title: "React入門實戰",
+      title: "React入门实战教程",
       updateTime: Date.now(),
     },
     {
       id: "2",
-      title: "React入門實戰2",
-      updateTime: Date.now() + 1,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "3",
-      title: "React入門實戰3",
-      updateTime: Date.now() + 2,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "4",
-      title: "React入門實戰4",
-      updateTime: Date.now() + 3,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "5",
-      title: "React入門實戰5React入門實戰5React入門實戰5React入門實戰5",
-      updateTime: Date.now() + 50,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "6",
-      title: "React入門實戰3",
-      updateTime: Date.now() + 2,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "7",
-      title: "React入門實戰4",
-      updateTime: Date.now() + 3,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "8",
-      title: "React入門實戰5React入門實戰5React入門實戰5React入門實戰5",
-      updateTime: Date.now() + 50,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "9",
-      title: "React入門實戰3",
-      updateTime: Date.now() + 2,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "10",
-      title: "React入門實戰4",
-      updateTime: Date.now() + 3,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "11",
-      title: "BBBReact入門實戰5React入門實戰5React入門實戰5React入門實戰5",
-      updateTime: Date.now() + 4444,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "12",
-      title: "React入門實戰3",
-      updateTime: Date.now() + 2,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "13",
-      title: "React入門實戰4",
-      updateTime: Date.now() + 3,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "14",
-      title: "React入門實戰5React入門實戰5React入門實戰5React入門實戰5",
-      updateTime: Date.now() + 50,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "15",
-      title: "React入門實戰3",
+      title: "知行小课",
       updateTime: Date.now() + 2,
-    },
-    {
-      id: "16",
-      title: "React入門實戰4",
-      updateTime: Date.now() + 3,
-    },
-    {
-      id: "17",
-      title: "React入門實戰5React入門實戰5React入門實戰5React入門實戰5",
-      updateTime: Date.now() + 50,
-    },
-    {
-      id: "18",
-      title: "React入門實戰3",
-      updateTime: Date.now() + 2,
-    },
-    {
-      id: "19",
-      title: "React入門實戰4",
-      updateTime: Date.now() + 3,
-    },
-    {
-      id: "20",
-      title: "React入門實戰5React入門實戰5React入門實戰5React入門實戰5",
-      updateTime: Date.now() + 50,
-    },
-    {
-      id: "21",
-      title: "React入門實戰3",
-      updateTime: Date.now() + 2,
-    },
-    {
-      id: "22",
-      title: "React入門實戰4",
-      updateTime: Date.now() + 3333,
-    },
-    {
-      id: "23",
-      title: "React入門實戰5React入門實戰5React入門實戰5React入門實戰5",
-      updateTime: Date.now() + 33,
     },
   ]);
 
@@ -141,10 +101,10 @@ export default function ChatList() {
       {groupList.map(([date, list]) => {
         return (
           <div key={date}>
-            <div key={date}>
+            <div>
               <div className="sticky top-0 z-10 p-3 text-sm bg-gray-900 text-gray-500">{date}</div>
             </div>
-            <ul>
+            <ul key={date}>
               {list.map(item => {
                 const selected = selectedChat?.id === item.id;
                 return (
