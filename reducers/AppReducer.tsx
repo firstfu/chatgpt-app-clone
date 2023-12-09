@@ -1,7 +1,6 @@
 import { Message } from "@/types/chat";
 
 export type State = {
-  // 是否顯示導航欄
   displayNavigation: boolean;
   themeMode: "dark" | "light";
   currentModel: string;
@@ -14,20 +13,21 @@ export enum ActionType {
   UPDATE = "UPDATE",
   ADD_MESSAGE = "ADD_MESSAGE",
   UPDATE_MESSAGE = "UPDATE_MESSAGE",
+  REMOVE_MESSAGE = "REMOVE_MESSAGE",
 }
+
+type MessageAction = {
+  type: ActionType.ADD_MESSAGE | ActionType.UPDATE_MESSAGE | ActionType.REMOVE_MESSAGE;
+  message: Message;
+};
 
 // 更新操作的參數類型
 type UpdateAction = {
   type: ActionType.UPDATE;
-  //   屬性名3
+  //   屬性名
   field: string;
   //   屬性值
   value: any;
-};
-
-type MessageAction = {
-  type: ActionType.ADD_MESSAGE | ActionType.UPDATE_MESSAGE;
-  message: Message;
 };
 
 // 對外統一的操作類型
@@ -57,6 +57,12 @@ export function reducer(state: State, action: Action) {
           return action.message;
         }
         return message;
+      });
+      return { ...state, messageList };
+    }
+    case ActionType.REMOVE_MESSAGE: {
+      const messageList = state.messageList.filter(message => {
+        return message.id !== action.message.id;
       });
       return { ...state, messageList };
     }
