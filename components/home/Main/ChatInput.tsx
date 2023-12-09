@@ -1,5 +1,5 @@
 import Button from "@/components/common/Button";
-import React from "react";
+import React, { useState } from "react";
 
 import { PiLightningFill } from "react-icons/pi";
 import { FiSend } from "react-icons/fi";
@@ -7,6 +7,43 @@ import { MdRefresh } from "react-icons/md";
 import TextareaAutosize from "react-textarea-autosize";
 
 export default function ChatInput() {
+  const [messageText, setMessageText] = useState("");
+
+  async function send() {
+    const body = JSON.stringify({
+      messageText,
+    });
+
+    console.log("發送消息:", messageText);
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    });
+    console.log("🚀 ~ file: ChatInput.tsx:24 ~ send ~ response:", response);
+    if (!response.ok) {
+      console.error("發送消息失敗:", response, response.status, response.statusText);
+      return;
+    }
+    if (!response.body) {
+      console.log("發送消息失敗: 沒有返回body:", response.status, response.statusText);
+      return;
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    while (!done) {
+      const result = await reader.read();
+      done = result.done;
+      const chunk = decoder.decode(result.value);
+      console.log("🚀 ~ file: ChatInput.tsx:40 ~ send ~ chunk:", chunk);
+    }
+    setMessageText(v => "");
+  }
+
   return (
     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-b from-[rgba(255,255,255,0)] from-[13.94%] to-[#fff] to-[54.73%] pt-10 dark:from-[rgba(53,55,64,0)] dark:to-[#353740] dark:to-[58.85%]">
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4">
@@ -21,9 +58,14 @@ export default function ChatInput() {
         <TextareaAutosize
           className="outline-none flex-1 max-h-64 mb-1.5 bg-transparent text-black dark:text-white resize-none border-0"
           placeholder="輸入一條消息.."
+          value={messageText}
           rows={10}
+          onChange={e => {
+            console.log("輸入消息:", e.target.value);
+            setMessageText(v => e.target.value);
+          }}
         />
-        <Button icon={FiSend} variant="primary" className="mx-3 !rounded-lg" />
+        <Button icon={FiSend} variant="primary" className="mx-3 !rounded-lg" onClick={send} />
       </div>
       <footer className="text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6">
         ©{new Date().getFullYear()}&nbsp;{" "}
