@@ -93,7 +93,7 @@ export default function ChatList() {
     return groupByDate(chatList);
   }, [chatList]);
 
-  console.log("groupList:", groupList);
+  //   console.log("groupList:", groupList);
 
   return (
     <div className="flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto">

@@ -18,7 +18,7 @@ type Props = {
 export default function Main() {
   const { state } = useAppContext();
 
-  console.log("state:", state);
+  //   console.log("state:", state);
 
   return (
     <div className="flex-1 relative">

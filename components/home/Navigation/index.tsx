@@ -17,7 +17,7 @@ export default function Navigation() {
   const {
     state: { displayNavigation },
   } = useAppContext();
-  console.log("Navigation rendered");
+  //   console.log("Navigation rendered");
 
   return (
     <nav className={`${displayNavigation ? "" : "hidden"}  flex flex-col dark relative  h-full w-[320px] bg-gray-900 text-green-300 p-2`}>

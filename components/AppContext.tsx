@@ -64,7 +64,7 @@ export function useAppContext() {
 }
 
 export default function AppContextProvider({ children }: { children: ReactNode }) {
-  console.log("AppContextProvider rendered");
+  //   console.log("AppContextProvider rendered");
 
   let [state, dispatch] = useReducer(reducer, initState);
 
