@@ -19,12 +19,30 @@ export default function ChatInput() {
     dispatch,
   } = useAppContext();
 
+  async function createOrUpdateMessage(message: Message) {
+    const response = await fetch("/api/message/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+    console.log("🚀 ~ file: ChatInput.tsx:30 ~ createOrUpdateMessage ~ response:", response);
+    if (!response.ok) {
+      console.error("createOrUpdateMessage失敗:", response, response.status, response.statusText);
+      return;
+    }
+    const { data } = await response.json();
+    return data.message;
+  }
+
   async function send() {
-    const message: Message = {
-      id: uuidv4(),
+    const message = await createOrUpdateMessage({
+      id: "",
       role: "user",
       content: messageText,
-    };
+      chatId: "",
+    });
     dispatch({ type: ActionType.ADD_MESSAGE, message });
     const messages = messageList.concat([message]);
     doSend(messages);
@@ -69,6 +87,7 @@ export default function ChatInput() {
       id: uuidv4(),
       role: "assistant",
       content: "",
+      chatId: "",
     };
     dispatch({ type: ActionType.ADD_MESSAGE, message: responseMessage });
     dispatch({ type: ActionType.UPDATE, field: "streamingId", value: responseMessage.id });
