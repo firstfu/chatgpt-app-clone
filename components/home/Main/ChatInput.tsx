@@ -13,6 +13,8 @@ import { ActionType } from "@/reducers/AppReducer";
 export default function ChatInput() {
   const [messageText, setMessageText] = useState("");
   const stopRef = useRef(false);
+  //   維護caht id的狀態，同1個對話的消息應該有相同的chat id
+  const chatIdRef = useRef("");
 
   const {
     state: { messageList, currentModel, streamingId },
@@ -33,7 +35,28 @@ export default function ChatInput() {
       return;
     }
     const { data } = await response.json();
+    if (!chatIdRef.current) {
+      chatIdRef.current = data.message.chatId;
+    }
     return data.message;
+  }
+
+  //   刪除消息
+  async function deleteMessage(id: string) {
+    const response = await fetch(`/api/message/delete?id=${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("🚀 ~ file: ChatInput.tsx:43 ~ deleteMessage ~ response:", response);
+
+    if (!response.ok) {
+      console.error("deleteMessage失敗:", response, response.status, response.statusText);
+      return;
+    }
+    const { code } = await response.json();
+    return code === 0;
   }
 
   async function send() {
@@ -41,7 +64,7 @@ export default function ChatInput() {
       id: "",
       role: "user",
       content: messageText,
-      chatId: "",
+      chatId: chatIdRef.current,
     });
     dispatch({ type: ActionType.ADD_MESSAGE, message });
     const messages = messageList.concat([message]);
@@ -51,6 +74,12 @@ export default function ChatInput() {
   async function resend() {
     const messages = [...messageList];
     if (messages.length !== 0 && messages[messages.length - 1].role === "assistant") {
+      // 刪除server消息
+      const result = await deleteMessage(messages[messages.length - 1].id);
+      if (!result) {
+        console.log("delete error");
+        return;
+      }
       dispatch({
         type: ActionType.REMOVE_MESSAGE,
         message: messages[messages.length - 1],
@@ -83,12 +112,14 @@ export default function ChatInput() {
       console.log("發送消息失敗: 沒有返回body:", response.status, response.statusText);
       return;
     }
-    const responseMessage: Message = {
-      id: uuidv4(),
+
+    const responseMessage: Message = await createOrUpdateMessage({
+      id: "",
       role: "assistant",
       content: "",
-      chatId: "",
-    };
+      chatId: chatIdRef.current,
+    });
+
     dispatch({ type: ActionType.ADD_MESSAGE, message: responseMessage });
     dispatch({ type: ActionType.UPDATE, field: "streamingId", value: responseMessage.id });
 
@@ -114,6 +145,11 @@ export default function ChatInput() {
       });
       console.log("🚀 ~ file: ChatInput.tsx:70 ~ send ~ content:", content);
     }
+    // 更新server消息內容
+    createOrUpdateMessage({
+      ...responseMessage,
+      content,
+    });
     dispatch({ type: ActionType.UPDATE, field: "streamingId", value: "" });
   }
 
