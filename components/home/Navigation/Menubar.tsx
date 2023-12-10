@@ -12,21 +12,25 @@ export default function Menubar() {
 
   return (
     <div className="flex space-x-3">
-      <Button icon={HiPlus} variant="outline" className="flex-1">
+      <Button
+        icon={HiPlus}
+        variant="outline"
+        className="flex-1"
+        onClick={() => {
+          //   alert("新建對話");
+          dispatch({
+            type: ActionType.UPDATE,
+            field: "selectedChat",
+            value: null,
+          });
+        }}
+      >
         新建對話
       </Button>
       <Button
         icon={LuPanelLeft}
         variant="outline"
         onClick={() => {
-          //   setState(v => {
-          //     console.log("v:", v);
-          //     return {
-          //       ...v,
-          //       displayNavigation: false,
-          //     };
-          //   });
-
           dispatch({
             type: ActionType.UPDATE,
             field: "displayNavigation",

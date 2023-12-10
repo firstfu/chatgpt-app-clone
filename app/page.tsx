@@ -6,7 +6,7 @@ import { useAppContext } from "@/components/AppContext";
 
 export default function Home() {
   const {
-    state: { themeMode },
+    state: { themeMode = "dark" },
   } = useAppContext();
   return (
     <div className={`${themeMode} h-full flex`}>

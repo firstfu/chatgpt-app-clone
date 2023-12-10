@@ -11,8 +11,14 @@ export async function GET(request: NextRequest) {
       updateTime: "desc",
     },
   });
+
+  const count = await prisma.chat.count();
+  const hasMore = count > page * 20;
+  console.log("count:", count);
+  console.log("hasMore:", hasMore);
+
   return NextResponse.json({
     code: 0,
-    data: { list },
+    data: { list, hasMore },
   });
 }

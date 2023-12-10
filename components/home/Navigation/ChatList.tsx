@@ -27,20 +27,33 @@ export default function ChatList() {
     dispatch,
   } = useAppContext();
 
+  const loadMoreRef = useRef(null);
+  const hasMoreRef = useRef(false);
+  //   避免重複請求, 用ref來記錄狀態, 避免請求還沒回來就發起下一次請求
+  const loadingRef = useRef(false);
+
   async function getData() {
+    if (loadingRef.current) {
+      return;
+    }
+    loadingRef.current = true;
     const response = await fetch(`/api/chat/list?page=${pageRef.current}&size=20`, {
       method: "GET",
     });
     if (!response.ok) {
       console.error("getData失敗:", response, response.status, response.statusText);
+      loadingRef.current = false;
       return;
     }
+    pageRef.current++;
     const { data } = await response.json();
+    hasMoreRef.current = data.hasMore;
     if (pageRef.current === 1) {
       setChatList(data.list);
     } else {
       setChatList(list => list.concat(data.list));
     }
+    loadingRef.current = false;
   }
 
   useEffect(() => {
@@ -58,6 +71,26 @@ export default function ChatList() {
       unsubscribe("fectchChatList", callback);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+    let div = loadMoreRef.current;
+    if (div) {
+      observer = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMoreRef.current) {
+          console.log("visible.....發起請求");
+          //   發起請求
+          getData();
+        }
+      });
+      observer.observe(div);
+    }
+    return () => {
+      if (observer && div) {
+        observer.unobserve(div);
+      }
+    };
   }, []);
 
   return (
@@ -89,6 +122,8 @@ export default function ChatList() {
           </div>
         );
       })}
+      {/* 加載更多 */}
+      <div ref={loadMoreRef}>&nbsp;</div>
     </div>
   );
 }

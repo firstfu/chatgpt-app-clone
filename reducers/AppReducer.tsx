@@ -37,7 +37,7 @@ export type Action = UpdateAction | MessageAction;
 // 默認狀態定義
 export const initState: State = {
   displayNavigation: true,
-  themeMode: "light",
+  themeMode: "dark",
   currentModel: "gpt-3.5-turbo",
   messageList: [],
   streamingId: "",

@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/common/Button";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { PiLightningFill, PiStopBold } from "react-icons/pi";
 import { FiSend } from "react-icons/fi";
@@ -20,11 +20,20 @@ export default function ChatInput() {
   const chatIdRef = useRef("");
 
   const {
-    state: { messageList, currentModel, streamingId },
+    state: { messageList, currentModel, streamingId, selectedChat },
     dispatch,
   } = useAppContext();
 
   let { publish } = useEventBusContext();
+
+  useEffect(() => {
+    console.log("ChatInput....");
+    if (chatIdRef.current === selectedChat?.id) {
+      return;
+    }
+    chatIdRef.current = selectedChat?.id ?? "";
+    stopRef.current = true;
+  }, [selectedChat]);
 
   async function createOrUpdateMessage(message: Message) {
     const response = await fetch("/api/message/update", {
@@ -43,6 +52,13 @@ export default function ChatInput() {
     if (!chatIdRef.current) {
       chatIdRef.current = data.message.chatId;
       publish("fectchChatList");
+      dispatch({
+        type: ActionType.UPDATE,
+        field: "selectedChat",
+        value: {
+          id: chatIdRef.current,
+        },
+      });
     }
     return data.message;
   }
@@ -96,6 +112,7 @@ export default function ChatInput() {
   }
 
   async function doSend(messages: Message[]) {
+    stopRef.current = false;
     const body: MessageRequestBody = { messages, model: currentModel };
     setMessageText("");
     const controller = new AbortController();
