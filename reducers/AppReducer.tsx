@@ -46,7 +46,9 @@ export const initState: State = {
 export function reducer(state: State, action: Action) {
   switch (action.type) {
     case ActionType.UPDATE:
-      return { ...state, [action.field]: action.value };
+      const rs = { ...state, [action.field]: action.value };
+      console.log("🚀 ~ file: AppReducer.tsx:50 ~ reducer ~ rs:", rs);
+      return rs;
       break;
     case ActionType.ADD_MESSAGE: {
       const messageList = state.messageList.concat([action.message]);

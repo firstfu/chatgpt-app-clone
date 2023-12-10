@@ -1,9 +1,10 @@
 "use client";
 
+import { useAppContext } from "@/components/AppContext";
 import { useEventBusContext } from "@/components/EventBusContext";
+import { ActionType } from "@/reducers/AppReducer";
 import { Chat } from "@/types/chat";
 import React, { useEffect, useState } from "react";
-
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
 import { PiChatBold, PiTramBold, PiTrashBold } from "react-icons/pi";
@@ -19,12 +20,14 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [title, setTitle] = useState(item.title);
   const { publish } = useEventBusContext();
+  const { dispatch } = useAppContext();
 
   useEffect(() => {
     setEditing(false);
     setDeleting(false);
   }, [selected]);
 
+  //   更新對話
   async function updateChat() {
     const response = await fetch("/api/chat/update", {
       method: "POST",
@@ -40,6 +43,29 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
     const { code } = await response.json();
     if (code === 0) {
       publish("fetchChatList");
+    }
+  }
+
+  //   刪除對話
+  async function deleteChat() {
+    const response = await fetch(`/api/chat/delete?id=${item.id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      return;
+    }
+    const { code } = await response.json();
+    if (code === 0) {
+      publish("fetchChatList");
+      dispatch({
+        type: ActionType.UPDATE,
+        field: "selectedChat",
+        value: null,
+      });
     }
   }
 
@@ -85,6 +111,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
                 onClick={e => {
                   if (deleting) {
                     console.log("刪除處理");
+                    deleteChat();
                   } else {
                     console.log("編輯處理");
                     updateChat();
