@@ -1,11 +1,46 @@
 import { useAppContext } from "@/components/AppContext";
 import Markdown from "@/components/common/Markdown";
+import { ActionType } from "@/reducers/AppReducer";
+import { useEffect } from "react";
 import { SiOpenai } from "react-icons/si";
 
 export default function MessageList() {
   const {
-    state: { messageList, streamingId },
+    state: { messageList, streamingId, selectedChat },
+    dispatch,
   } = useAppContext();
+
+  async function getData(chatId: string) {
+    const response = await fetch(`/api/message/list?chatId=${chatId}`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      console.error("getData失敗:", response, response.status, response.statusText);
+      return;
+    }
+    const { data } = await response.json();
+    dispatch({
+      type: ActionType.UPDATE,
+      field: "messageList",
+      value: data.list,
+    });
+  }
+
+  useEffect(() => {
+    if (selectedChat) {
+      console.log("1");
+      getData(selectedChat.id);
+    } else {
+      console.log("2");
+
+      dispatch({
+        type: ActionType.UPDATE,
+        field: "messageList",
+        value: [],
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedChat]);
 
   return (
     <div className="w-full pt-10 pb-48 dark:text-gray-300">

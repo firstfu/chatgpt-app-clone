@@ -1,3 +1,5 @@
+"use client";
+
 import Button from "@/components/common/Button";
 import React, { useRef, useState } from "react";
 

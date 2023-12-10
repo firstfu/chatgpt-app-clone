@@ -1,15 +1,15 @@
 "use client";
 
-import { useAppContext } from "@/components/AppContext";
-import Main from "@/components/home/Main";
 import Navigation from "@/components/home/Navigation";
-import React, { useState } from "react";
+import Main from "@/components/home/Main";
+import { useAppContext } from "@/components/AppContext";
 
 export default function Home() {
-  const { state } = useAppContext();
-
+  const {
+    state: { themeMode },
+  } = useAppContext();
   return (
-    <div className={`${state.themeMode} h-full flex`}>
+    <div className={`${themeMode} h-full flex`}>
       <Navigation />
       <Main />
     </div>

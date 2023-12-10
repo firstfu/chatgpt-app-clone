@@ -2,103 +2,56 @@
 
 import { groupByDate } from "@/common/util";
 import { Chat } from "@/types/chat";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
 import { PiChatBold, PiTrashBold } from "react-icons/pi";
 import ChatItem from "./ChatItem";
 import { useEventBusContext } from "@/components/EventBusContext";
+import { useAppContext } from "@/components/AppContext";
+import { ActionType } from "@/reducers/AppReducer";
 
 export default function ChatList() {
-  const [chatList, setChatList] = useState<Chat[]>([
-    {
-      id: "1",
-      title: "React入门实战教程",
-      updateTime: Date.now(),
-    },
-    {
-      id: "2",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "3",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "4",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "5",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "6",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "7",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "8",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "9",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "10",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "11",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "12",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "13",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "14",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "15",
-      title: "知行小课",
-      updateTime: Date.now() + 2,
-    },
-  ]);
+  const [chatList, setChatList] = useState<Chat[]>([]);
+  const pageRef = useRef(1);
 
-  const [selectedChat, setSelectedChat] = useState<Chat>();
   let groupList = useMemo(() => {
     return groupByDate(chatList);
   }, [chatList]);
 
   //   訂閱事件
   const { subscribe, unsubscribe, publish } = useEventBusContext();
+  const {
+    state: { selectedChat },
+    dispatch,
+  } = useAppContext();
+
+  async function getData() {
+    const response = await fetch(`/api/chat/list?page=${pageRef.current}&size=20`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      console.error("getData失敗:", response, response.status, response.statusText);
+      return;
+    }
+    const { data } = await response.json();
+    if (pageRef.current === 1) {
+      setChatList(data.list);
+    } else {
+      setChatList(list => list.concat(data.list));
+    }
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   useEffect(() => {
     const callback: EventListener = () => {
       console.log("fectchChatList event");
+      pageRef.current = 1;
+      getData();
     };
     subscribe("fectchChatList", callback);
     return () => {
@@ -126,7 +79,7 @@ export default function ChatList() {
                       item={item}
                       selected={selected}
                       onSelected={chat => {
-                        setSelectedChat(chat);
+                        dispatch({ type: ActionType.UPDATE, field: "selectedChat", value: chat });
                       }}
                     ></ChatItem>
                   </>
@@ -138,4 +91,7 @@ export default function ChatList() {
       })}
     </div>
   );
+}
+function userRef(arg0: number) {
+  throw new Error("Function not implemented.");
 }
