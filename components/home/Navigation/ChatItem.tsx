@@ -1,5 +1,6 @@
 "use client";
 
+import { useEventBusContext } from "@/components/EventBusContext";
 import { Chat } from "@/types/chat";
 import React, { useEffect, useState } from "react";
 
@@ -16,11 +17,31 @@ type Props = {
 export default function ChatItem({ item, selected, onSelected }: Props) {
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [title, setTitle] = useState(item.title);
+  const { publish } = useEventBusContext();
 
   useEffect(() => {
     setEditing(false);
     setDeleting(false);
   }, [selected]);
+
+  async function updateChat() {
+    const response = await fetch("/api/chat/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: item.id, title }),
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      return;
+    }
+    const { code } = await response.json();
+    if (code === 0) {
+      publish("fetchChatList");
+    }
+  }
 
   return (
     <li
@@ -34,16 +55,27 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
 
       {/* 輸入框 */}
       {editing ? (
-        <input className="flex-1 min-w-0 bg-transparent outline-none" defaultValue={item.title} autoFocus={true} />
+        <input
+          className="flex-1 min-w-0 bg-transparent outline-none"
+          autoFocus={true}
+          value={title}
+          onChange={e => {
+            setTitle(e.target.value);
+          }}
+        />
       ) : (
         <div className="relative flex-1 whitespace-nowrap overflow-hidden">
           {item.title}
           <span
-            className={` group-hover:from-gray-800 absolute right-0 inset-y-0 w-8 from-gray-900 bg-gradient-to-l ${selected ? "from-gray-800" : ""}`}
+            className={` group-hover:from-gray-800
+             absolute right-0
+            inset-y-0 w-8 from-gray-900
+            bg-gradient-to-l ${selected ? "from-gray-800" : ""}`}
           ></span>
         </div>
       )}
 
+      {/* 按鈕 */}
       {selected && (
         <div className="absolute right-1 flex">
           {editing || deleting ? (
@@ -55,8 +87,8 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
                     console.log("刪除處理");
                   } else {
                     console.log("編輯處理");
+                    updateChat();
                   }
-
                   setDeleting(false);
                   setEditing(false);
                   e.stopPropagation();

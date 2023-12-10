@@ -1,5 +1,3 @@
-"use client";
-
 import { groupByDate } from "@/common/util";
 import { Chat } from "@/types/chat";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -40,12 +38,12 @@ export default function ChatList() {
     const response = await fetch(`/api/chat/list?page=${pageRef.current}&size=20`, {
       method: "GET",
     });
+    console.log("訂閱事件請求....");
     if (!response.ok) {
       console.error("getData失敗:", response, response.status, response.statusText);
       loadingRef.current = false;
       return;
     }
-    pageRef.current++;
     const { data } = await response.json();
     hasMoreRef.current = data.hasMore;
     if (pageRef.current === 1) {
@@ -53,6 +51,7 @@ export default function ChatList() {
     } else {
       setChatList(list => list.concat(data.list));
     }
+    pageRef.current++;
     loadingRef.current = false;
   }
 
@@ -62,13 +61,13 @@ export default function ChatList() {
 
   useEffect(() => {
     const callback: EventListener = () => {
-      console.log("fectchChatList event");
+      console.log("fetchChatList event");
       pageRef.current = 1;
       getData();
     };
-    subscribe("fectchChatList", callback);
+    subscribe("fetchChatList", callback);
     return () => {
-      unsubscribe("fectchChatList", callback);
+      unsubscribe("fetchChatList", callback);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -126,7 +125,4 @@ export default function ChatList() {
       <div ref={loadMoreRef}>&nbsp;</div>
     </div>
   );
-}
-function userRef(arg0: number) {
-  throw new Error("Function not implemented.");
 }
