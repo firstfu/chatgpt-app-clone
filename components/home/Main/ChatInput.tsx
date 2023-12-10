@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Message, MessageRequestBody } from "@/types/chat";
 import { useAppContext } from "@/components/AppContext";
 import { ActionType } from "@/reducers/AppReducer";
+import { useEventBusContext } from "@/components/EventBusContext";
 
 export default function ChatInput() {
   const [messageText, setMessageText] = useState("");
@@ -20,6 +21,8 @@ export default function ChatInput() {
     state: { messageList, currentModel, streamingId },
     dispatch,
   } = useAppContext();
+
+  let { publish } = useEventBusContext();
 
   async function createOrUpdateMessage(message: Message) {
     const response = await fetch("/api/message/update", {
@@ -37,6 +40,7 @@ export default function ChatInput() {
     const { data } = await response.json();
     if (!chatIdRef.current) {
       chatIdRef.current = data.message.chatId;
+      publish("fectchChatList");
     }
     return data.message;
   }
@@ -143,7 +147,7 @@ export default function ChatInput() {
         type: ActionType.UPDATE_MESSAGE,
         message: { ...responseMessage, content },
       });
-      console.log("🚀 ~ file: ChatInput.tsx:70 ~ send ~ content:", content);
+      //   console.log("🚀 ~ file: ChatInput.tsx:70 ~ send ~ content:", content);
     }
     // 更新server消息內容
     createOrUpdateMessage({

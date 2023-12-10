@@ -2,12 +2,13 @@
 
 import { groupByDate } from "@/common/util";
 import { Chat } from "@/types/chat";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
 import { PiChatBold, PiTrashBold } from "react-icons/pi";
 import ChatItem from "./ChatItem";
+import { useEventBusContext } from "@/components/EventBusContext";
 
 export default function ChatList() {
   const [chatList, setChatList] = useState<Chat[]>([
@@ -93,7 +94,18 @@ export default function ChatList() {
     return groupByDate(chatList);
   }, [chatList]);
 
-  //   console.log("groupList:", groupList);
+  //   訂閱事件
+  const { subscribe, unsubscribe, publish } = useEventBusContext();
+  useEffect(() => {
+    const callback: EventListener = () => {
+      console.log("fectchChatList event");
+    };
+    subscribe("fectchChatList", callback);
+    return () => {
+      unsubscribe("fectchChatList", callback);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto">
