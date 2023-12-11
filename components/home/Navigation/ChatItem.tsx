@@ -4,7 +4,7 @@ import { useAppContext } from "@/components/AppContext";
 import { useEventBusContext } from "@/components/EventBusContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { Chat } from "@/types/chat";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
 import { PiChatBold, PiTramBold, PiTrashBold } from "react-icons/pi";

@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Message, MessageRequestBody } from "@/types/chat";
 import { useAppContext } from "@/components/AppContext";
 import { ActionType } from "@/reducers/AppReducer";
-import { useEventBusContext } from "@/components/EventBusContext";
+import { useEventBusContext, EventListener } from "@/components/EventBusContext";
 
 export default function ChatInput() {
   const [messageText, setMessageText] = useState("");
@@ -23,11 +23,20 @@ export default function ChatInput() {
     state: { messageList, currentModel, streamingId, selectedChat },
     dispatch,
   } = useAppContext();
-
-  let { publish } = useEventBusContext();
+  let { publish, subscribe, unsubscribe } = useEventBusContext();
 
   useEffect(() => {
-    console.log("ChatInput....");
+    const callback: EventListener = data => {
+      send(data);
+    };
+    subscribe("createNewChat", callback);
+    return () => {
+      unsubscribe("createNewChat", callback);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (chatIdRef.current === selectedChat?.id) {
       return;
     }
@@ -81,16 +90,75 @@ export default function ChatInput() {
     return code === 0;
   }
 
-  async function send() {
+  //   更新對話標題
+  async function updateChatTitle(messages: Message[]) {
+    const message: Message = {
+      id: "",
+      role: "user",
+      content: "使用 5 到 10 個字直接返回這句話的簡要主題，不要解釋、不要標點、不要語氣詞、不要多余文本，如果沒有主題，請直接返回'新對話'",
+      chatId: chatIdRef.current,
+    };
+    const chatId = chatIdRef.current;
+    const body: MessageRequestBody = {
+      messages: [...messages, message],
+      model: currentModel,
+    };
+    let response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      return;
+    }
+    if (!response.body) {
+      console.log("body error");
+      return;
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    let title = "";
+    while (!done) {
+      const result = await reader.read();
+      done = result.done;
+      const chunk = decoder.decode(result.value);
+      title += chunk;
+    }
+    response = await fetch("/api/chat/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: chatId, title }),
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      return;
+    }
+    const { code } = await response.json();
+    if (code === 0) {
+      publish("fetchChatList");
+    }
+  }
+
+  async function send(content: string) {
     const message = await createOrUpdateMessage({
       id: "",
       role: "user",
-      content: messageText,
+      content,
       chatId: chatIdRef.current,
     });
     dispatch({ type: ActionType.ADD_MESSAGE, message });
     const messages = messageList.concat([message]);
     doSend(messages);
+
+    if (!selectedChat?.title || selectedChat.title === "新對話") {
+      updateChatTitle(messages);
+    }
   }
 
   async function resend() {
@@ -217,7 +285,15 @@ export default function ChatInput() {
               setMessageText(e.target.value);
             }}
           />
-          <Button icon={FiSend} variant="primary" className="mx-3 !rounded-lg" onClick={send} disabled={messageText.trim() === "" || streamingId !== ""} />
+          <Button
+            icon={FiSend}
+            variant="primary"
+            className="mx-3 !rounded-lg"
+            onClick={() => {
+              send(messageText);
+            }}
+            disabled={messageText.trim() === "" || streamingId !== ""}
+          />
         </div>
 
         <footer className="text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6">

@@ -1,10 +1,6 @@
-/**
- * @ Author: firstfu
- * @ Create Time: 2023-12-08 02:13:50
- * @ Description: 主體內容
- */
+"use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import MenuButton from "./MenuButton";
 import { useAppContext } from "@/components/AppContext";
 import Welcome from "./Welcome";
@@ -16,17 +12,18 @@ type Props = {
 };
 
 export default function Main() {
-  const { state } = useAppContext();
-
-  //   console.log("state:", state);
-
+  const {
+    state: { selectedChat },
+  } = useAppContext();
   return (
     <div className="flex-1 relative">
       <main className="overflow-y-auto w-full h-full bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
-        <MenuButton />
-        {/* <Welcome /> */}
-        <MessageList />
-        <ChatInput />
+        <Suspense fallback={<div className="bg-white text-xl">loading</div>}>
+          <MenuButton />
+          {!selectedChat && <Welcome />}
+          <MessageList />
+          <ChatInput />
+        </Suspense>
       </main>
     </div>
   );
