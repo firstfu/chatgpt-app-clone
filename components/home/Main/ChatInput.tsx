@@ -12,6 +12,7 @@ import { Message, MessageRequestBody } from "@/types/chat";
 import { useAppContext } from "@/components/AppContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { useEventBusContext, EventListener } from "@/components/EventBusContext";
+import { flushSync } from "react-dom";
 
 export default function ChatInput() {
   const [messageText, setMessageText] = useState("");
